@@ -20,21 +20,23 @@ namespace SimpleQRGenerator
 
             Console.WriteLine("Service SimpleQRGenerator start");
             Console.WriteLine("http port " + httpPort);
-            Console.WriteLine("https port " + httpsPort);
+            //Console.WriteLine("https port " + httpsPort);
 
 
             var builder = WebApplication.CreateBuilder(args);
             builder.WebHost
-            //.UseSetting(WebHostDefaults.SuppressStatusMessagesKey, "True")
+            .UseSetting(WebHostDefaults.SuppressStatusMessagesKey, "True")
+            
+            
             .ConfigureKestrel((context, serverOptions) =>
             {
 
                 serverOptions.Listen(IPAddress.Loopback, httpPort);
-                serverOptions.Listen(IPAddress.Loopback, httpsPort, listenOptions =>
-                {
-                    listenOptions.UseHttps();//nada de certificados.... por ahora-
+                //serverOptions.Listen(IPAddress.Loopback, httpsPort, listenOptions =>
+                //{
+                    //listenOptions.UseHttps();//nada de certificados.... por ahora-
 
-                });
+                //````});
             });
 
             //Configuración de registro para limitar los mensajes de registro
