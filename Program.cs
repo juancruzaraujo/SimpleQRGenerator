@@ -16,7 +16,7 @@ namespace SimpleQRGenerator
             const string C_QRGENERATOR = "/qrgenerator/{inputString}";
 
             int httpPort = Convert.ToInt32(args[0]);
-            int httpsPort = Convert.ToInt32(args[1]);
+            //int httpsPort = Convert.ToInt32(args[1]);
 
             Console.WriteLine("Service SimpleQRGenerator start");
             Console.WriteLine("http port " + httpPort);
@@ -31,7 +31,7 @@ namespace SimpleQRGenerator
             .ConfigureKestrel((context, serverOptions) =>
             {
 
-                serverOptions.Listen(IPAddress.Loopback, httpPort);
+                serverOptions.Listen(IPAddress.Any, httpPort);
                 //serverOptions.Listen(IPAddress.Loopback, httpsPort, listenOptions =>
                 //{
                     //listenOptions.UseHttps();//nada de certificados.... por ahora-
