@@ -30,4 +30,4 @@ jobs:
         context: .
         file: .Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_LOGIN }}/qr-backend:latest
+        tags: ${{ secrets.DOCKER_LOGIN }}/simpleQRGenerator:latest
