@@ -1,7 +1,12 @@
-using System.Net;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System;
+using System.IO;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
+using SkiaSharp;
 using QRCoder;
+using System.Net;
 
 
 namespace SimpleQRGenerator
@@ -15,7 +20,7 @@ namespace SimpleQRGenerator
             const string C_QRGENERATOR = "/qrgenerator/{inputString}";
 
             int httpPort = 80;//Convert.ToInt32(args[0]);
-                                //int httpsPort = Convert.ToInt32(args[1]);
+                              //int httpsPort = Convert.ToInt32(args[1]);
 
             Console.WriteLine("Service SimpleQRGenerator start");
             Console.WriteLine("http port " + httpPort);
@@ -54,32 +59,23 @@ namespace SimpleQRGenerator
             });
 
             app.Run();
-            
+
 
         }
 
         private static async Task GenerateQRCode(HttpContext context)
         {
-            try
-            {
-                var inputString = context.Request.RouteValues["inputString"].ToString();
 
-                using (var qrGenerator = new QRCodeGenerator())
-                using (var qrCodeData = qrGenerator.CreateQrCode(inputString, QRCodeGenerator.ECCLevel.Q))
-                using (var qrCode = new QRCode(qrCodeData))
-                using (var bitmap = qrCode.GetGraphic(20))
-                using (var stream = new MemoryStream())
-                {
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    stream.Position = 0;
-                    context.Response.ContentType = "image/png";
-                    await stream.CopyToAsync(context.Response.Body);
-                }
-            }
-            catch(Exception ex)
+            var inputString = context.Request.RouteValues["inputString"].ToString();
+
+            using (var qrGenerator = new QRCodeGenerator())
             {
-                Console.WriteLine(ex.Message);
-                context.Response.StatusCode = ex.HResult;
+                var qrCodeData = qrGenerator.CreateQrCode(inputString, QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new PngByteQRCode(qrCodeData);
+                var qrCodeImage = qrCode.GetGraphic(20);
+
+                context.Response.ContentType = "image/png";
+                await context.Response.Body.WriteAsync(qrCodeImage, 0, qrCodeImage.Length);
             }
         }
     }
