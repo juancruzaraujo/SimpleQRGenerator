@@ -19,9 +19,21 @@ namespace SimpleQRGenerator
             const string C_TEST = "/test";
             const string C_QRGENERATOR = "/qrgenerator/{inputString}";
 
-            int httpPort = Convert.ToInt32(args[0]);
+            int httpPort;
+            if (args.Length > 0)
+            {
+                httpPort = Convert.ToInt32(args[0]);
+                for (int i = 0; i < args.Length; i++)
+                {
+                    Console.WriteLine(args[i]);
+                }
+            }
+            else
+            {
+                httpPort = 80;
+            }
             //int httpsPort = Convert.ToInt32(args[1]);
-            
+
 
             Console.WriteLine("Service SimpleQRGenerator start");
             Console.WriteLine("http port " + httpPort);
