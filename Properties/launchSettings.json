@@ -10,6 +10,7 @@
   "profiles": {
     "SimpleQRGenerator": {
       "commandName": "Project",
+      "commandLineArgs": "1789",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -26,6 +27,7 @@
     },
     "Docker": {
       "commandName": "Docker",
+      "commandLineArgs": "1789 \"hola mundo\"",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
