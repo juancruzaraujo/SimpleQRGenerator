@@ -38,7 +38,6 @@ namespace SimpleQRGenerator
             Console.WriteLine("Service SimpleQRGenerator start");
             Console.WriteLine("http port " + httpPort);
             //Console.WriteLine("https port " + httpsPort);
-            Console.WriteLine(args[1]);
 
             var builder = WebApplication.CreateBuilder(args);
             builder.WebHost

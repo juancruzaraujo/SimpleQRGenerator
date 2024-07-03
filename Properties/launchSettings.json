@@ -10,7 +10,6 @@
   "profiles": {
     "SimpleQRGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "1789 \"test args\" \"another value\" 1234",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
