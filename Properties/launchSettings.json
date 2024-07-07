@@ -10,6 +10,7 @@
   "profiles": {
     "SimpleQRGenerator": {
       "commandName": "Project",
+      "commandLineArgs": "1789 \"test args\" \"another value\" 1234",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -28,9 +29,13 @@
       "commandName": "Docker",
       "commandLineArgs": "1789 \"test args\" \"another value\" 1234",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "launchUrl": "http://localhost:1789",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": false,
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "http://+:1789",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+        }
+      }
     }
-  }
 }

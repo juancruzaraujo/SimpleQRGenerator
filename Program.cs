@@ -17,7 +17,10 @@ namespace SimpleQRGenerator
         public static void Main(string[] args)
         {
             const string C_TEST = "/test";
-            const string C_QRGENERATOR = "/qrgenerator/{inputString}";
+            //const string C_QRGENERATOR = "/qrgenerator/{inputString}";
+            const string C_QRGENENDPOINT = "QRGENERATOR_ENDPOINT";
+            string qrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_QRGENENDPOINT) + "/{inputString}";
+
 
             int httpPort;
             if (args.Length > 0)
@@ -67,7 +70,7 @@ namespace SimpleQRGenerator
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet(C_TEST, context => context.Response.WriteAsync("ready online"));
-                endpoints.MapGet(C_QRGENERATOR, GenerateQRCode);
+                endpoints.MapGet(qrGeneratorEndPointValue, GenerateQRCode);
             });
 
             app.Run();
