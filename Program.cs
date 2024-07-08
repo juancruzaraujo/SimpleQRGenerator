@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using SkiaSharp;
 using QRCoder;
 using System.Net;
-
+using System.Collections;
 
 namespace SimpleQRGenerator
 {
@@ -20,11 +20,19 @@ namespace SimpleQRGenerator
             //const string C_QRGENERATOR = "/qrgenerator/{inputString}";
             const string C_QRGENENDPOINT = "QRGENERATOR_ENDPOINT";
             string qrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_QRGENENDPOINT) + "/{inputString}";
-
-
             int httpPort;
+
+            Console.WriteLine("Environment variable list");
+            IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+            foreach (DictionaryEntry entry in environmentVariables)
+            {
+                Console.WriteLine($"{entry.Key} = {entry.Value}");
+            }
+
+
             if (args.Length > 0)
             {
+                Console.WriteLine("command arguments list");
                 httpPort = Convert.ToInt32(args[0]);
                 for (int i = 0; i < args.Length; i++)
                 {
