@@ -20,35 +20,33 @@ namespace SimpleQRGenerator
             //const string C_QRGENERATOR = "/qrgenerator/{inputString}";
             const string C_QRGENENDPOINT = "QRGENERATOR_ENDPOINT";
             string qrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_QRGENENDPOINT) + "/{inputString}";
-            int httpPort;
+            int httpPort=80;
+            int httpsPort=443;
 
-            Console.WriteLine("Environment variable list");
-            IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-            foreach (DictionaryEntry entry in environmentVariables)
-            {
-                Console.WriteLine($"{entry.Key} = {entry.Value}");
-            }
-
-
-            if (args.Length > 0)
+            
+            if (args.Length == 3)
             {
                 Console.WriteLine("command arguments list");
                 httpPort = Convert.ToInt32(args[0]);
+                httpsPort = Convert.ToInt32(args[1]);
                 for (int i = 0; i < args.Length; i++)
                 {
                     Console.WriteLine(args[i]);
                 }
             }
-            else
-            {
-                httpPort = 80;
-            }
-            //int httpsPort = Convert.ToInt32(args[1]);
 
+            if (Convert.ToInt32(args[2])==1) //muestro o no las variables de entorno
+            {
+                Console.WriteLine("Environment variable list");
+                IDictionary environmentVariables = Environment.GetEnvironmentVariables();
+                foreach (DictionaryEntry entry in environmentVariables)
+                {
+                    Console.WriteLine($"{entry.Key} = {entry.Value}");
+                }
+            }
 
             Console.WriteLine("Service SimpleQRGenerator start");
             Console.WriteLine("http port " + httpPort);
-            //Console.WriteLine("https port " + httpsPort);
 
             var builder = WebApplication.CreateBuilder(args);
             builder.WebHost
@@ -59,11 +57,10 @@ namespace SimpleQRGenerator
             {
 
                 serverOptions.Listen(IPAddress.Any, httpPort);
-                //serverOptions.Listen(IPAddress.Loopback, httpsPort, listenOptions =>
-                //{
-                //listenOptions.UseHttps();//nada de certificados.... por ahora-
-
-                //});
+                serverOptions.Listen(IPAddress.Any, httpsPort, listenOptions =>
+                {
+                    listenOptions.UseHttps();//nada de certificados.... por ahora-
+                });
             });
 
             //Configuración de registro para limitar los mensajes de registro
@@ -72,7 +69,7 @@ namespace SimpleQRGenerator
             //builder.Logging.SetMinimumLevel(LogLevel.Warning); // Establece el nivel de registro deseado (en este caso, Warning o superior)
 
 
-            var app = builder.Build();
+             var app = builder.Build();
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
