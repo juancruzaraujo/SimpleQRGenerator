@@ -19,7 +19,8 @@ namespace SimpleQRGenerator
             const string C_TEST = "/test";
             //const string C_QRGENERATOR = "/qrgenerator/{inputString}";
             const string C_QRGENENDPOINT = "QRGENERATOR_ENDPOINT";
-            string qrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_QRGENENDPOINT) + "/{inputString}";
+            //permite poner desde hola mundo hasta urls
+            string qrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_QRGENENDPOINT) + "/{**inputString}";
             int httpPort=80;
             int httpsPort=443;
 
@@ -57,10 +58,10 @@ namespace SimpleQRGenerator
             {
 
                 serverOptions.Listen(IPAddress.Any, httpPort);
-                serverOptions.Listen(IPAddress.Any, httpsPort, listenOptions =>
-                {
-                    listenOptions.UseHttps();//nada de certificados.... por ahora-
-                });
+                //serverOptions.Listen(IPAddress.Any, httpsPort, listenOptions =>
+                //{
+                //    listenOptions.UseHttps();//nada de certificados.... por ahora-
+                //});
             });
 
             //Configuración de registro para limitar los mensajes de registro
@@ -69,7 +70,7 @@ namespace SimpleQRGenerator
             //builder.Logging.SetMinimumLevel(LogLevel.Warning); // Establece el nivel de registro deseado (en este caso, Warning o superior)
 
 
-             var app = builder.Build();
+            var app = builder.Build();
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
@@ -85,8 +86,8 @@ namespace SimpleQRGenerator
 
         private static async Task GenerateQRCode(HttpContext context)
         {
-
-            var inputString = context.Request.RouteValues["inputString"].ToString();
+            var rawInput = context.Request.RouteValues["inputString"]?.ToString();
+            var inputString = Uri.UnescapeDataString(rawInput ?? string.Empty);
 
             using (var qrGenerator = new QRCodeGenerator())
             {
@@ -98,6 +99,8 @@ namespace SimpleQRGenerator
                 await context.Response.Body.WriteAsync(qrCodeImage, 0, qrCodeImage.Length);
             }
         }
+
+
     }
 
 

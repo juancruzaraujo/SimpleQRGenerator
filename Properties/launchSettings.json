@@ -1,12 +1,4 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:11599",
-      "sslPort": 44316
-    }
-  },
   "profiles": {
     "SimpleQRGenerator": {
       "commandName": "Project",
@@ -15,27 +7,35 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "",
+      "applicationUrl": "http://localhost:55004", // Asegúrate de que la URL de la aplicación está configurada correctamente
       "dotnetRunMessages": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "launchBrowser": true
     },
     "Docker": {
       "commandName": "Docker",
       "commandLineArgs": "1788 1789 0",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:1789",
+      "launchUrl": "http://localhost:55004", // Cambia esto para coincidir con el puerto expuesto
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://+:1789"
+        "ASPNETCORE_URLS": "http://+:1788" // Asegúrate de que la aplicación escuche en el puerto correcto
       },
       "publishAllPorts": true,
       "useSSL": false
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:11599",
+      "sslPort": 44316
     }
   }
 }
