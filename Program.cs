@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +8,7 @@ using SkiaSharp;
 using QRCoder;
 using System.Net;
 using System.Collections;
+using System.Text;
 
 namespace SimpleQRGenerator
 {
@@ -17,10 +18,12 @@ namespace SimpleQRGenerator
         public static void Main(string[] args)
         {
             const string C_TEST = "/test";
-            //const string C_QRGENERATOR = "/qrgenerator/{inputString}";
+            
             const string C_QRGENENDPOINT = "QRGENERATOR_ENDPOINT";
+            const string C_TEXTQRGENERATOR_ENDPOINT = "TEXTQRGENERATOR_ENDPOINT";
             //permite poner desde hola mundo hasta urls
             string qrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_QRGENENDPOINT) + "/{**inputString}";
+            string textqrGeneratorEndPointValue = Environment.GetEnvironmentVariable(C_TEXTQRGENERATOR_ENDPOINT) + "/{**inputString}";
             int httpPort=80;
             int httpsPort=443;
 
@@ -64,12 +67,6 @@ namespace SimpleQRGenerator
                 //});
             });
 
-            //Configuraci�n de registro para limitar los mensajes de registro
-            //builder.Logging.ClearProviders(); // Limpia todos los proveedores de registro existentes
-            //builder.Logging.AddConsole(); // Agrega el proveedor de registro de consola
-            //builder.Logging.SetMinimumLevel(LogLevel.Warning); // Establece el nivel de registro deseado (en este caso, Warning o superior)
-
-
             var app = builder.Build();
 
             app.UseRouting();
@@ -77,6 +74,7 @@ namespace SimpleQRGenerator
             {
                 endpoints.MapGet(C_TEST, context => context.Response.WriteAsync("ready online"));
                 endpoints.MapGet(qrGeneratorEndPointValue, GenerateQRCode);
+                endpoints.MapGet(textqrGeneratorEndPointValue, GenerateQRCodeText);
             });
 
             app.Run();
@@ -97,6 +95,55 @@ namespace SimpleQRGenerator
 
                 context.Response.ContentType = "image/png";
                 await context.Response.Body.WriteAsync(qrCodeImage, 0, qrCodeImage.Length);
+            }
+        }
+
+        private static async Task GenerateQRCodeText(HttpContext context)
+        {
+            var rawInput = context.Request.RouteValues["inputString"]?.ToString();
+            var inputString = Uri.UnescapeDataString(rawInput ?? string.Empty);
+
+            using (var qrGenerator = new QRCodeGenerator())
+            {
+                var qrCodeData = qrGenerator.CreateQrCode(inputString, QRCodeGenerator.ECCLevel.Q);
+
+                int padding = 4; //espacios en blanco que rodean el qr
+                int size = qrCodeData.ModuleMatrix.Count;
+
+                var sb = new StringBuilder();
+
+                //filas y padding arriba
+                for (int y = 0; y < padding; y++)
+                {
+                    sb.AppendLine(new string(' ', (size + 2 * padding) * 2));
+                }
+
+                //contenido del QR con padding del costado
+                for (int y = 0; y < size; y++)
+                {
+                    //padding izq
+                    sb.Append(new string(' ', padding * 2));
+
+                    for (int x = 0; x < size; x++)
+                    {
+                        bool pixel = qrCodeData.ModuleMatrix[y][x];
+                        sb.Append(pixel ? "█" : " ");
+                    }
+
+                    //padding derecho
+                    sb.Append(new string(' ', padding * 2));
+                    sb.AppendLine();
+                }
+
+                //filas del padding inferior
+                for (int y = 0; y < padding; y++)
+                {
+                    sb.AppendLine(new string(' ', (size + 2 * padding) * 2));
+                }
+
+                var qrText = sb.ToString();
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync(qrText);
             }
         }
 
