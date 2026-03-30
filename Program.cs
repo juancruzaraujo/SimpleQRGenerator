@@ -98,7 +98,7 @@ namespace SimpleQRGenerator
             }
         }
 
-        private static async Task GenerateQRCodeText(HttpContext context)
+        private static async Task GenerateQRCodeTextOld(HttpContext context)
         {
             var rawInput = context.Request.RouteValues["inputString"]?.ToString();
             var inputString = Uri.UnescapeDataString(rawInput ?? string.Empty);
@@ -146,6 +146,70 @@ namespace SimpleQRGenerator
                 await context.Response.WriteAsync(qrText);
             }
         }
+
+        private static async Task GenerateQRCodeText(HttpContext context)
+        {
+            var rawInput = context.Request.RouteValues["inputString"]?.ToString();
+            var inputString = Uri.UnescapeDataString(rawInput ?? string.Empty);
+
+            using (var qrGenerator = new QRCodeGenerator())
+            {
+                var qrCodeData = qrGenerator.CreateQrCode(inputString, QRCodeGenerator.ECCLevel.Q);
+
+                int padding = 4; // espacios en blanco que rodean el qr
+                int size = qrCodeData.ModuleMatrix.Count;
+
+                var sb = new StringBuilder();
+
+                string black = "\u001b[40m  "; // fondo negro, dos espacios
+                string white = "\u001b[47m  "; // fondo blanco, dos espacios
+                string reset = "\u001b[0m";
+
+                //filas de padding arriba
+                for (int y = 0; y < padding; y++)
+                {
+                    for (int x = 0; x < size + 2 * padding; x++)
+                        sb.Append(white);
+                    sb.Append(reset);
+                    sb.AppendLine();
+                }
+
+                //contenido del QR con padding lateral
+                for (int y = 0; y < size; y++)
+                {
+                    //padding izquierdo
+                    for (int p = 0; p < padding; p++)
+                        sb.Append(white);
+
+                    for (int x = 0; x < size; x++)
+                    {
+                        bool pixel = qrCodeData.ModuleMatrix[y][x];
+                        sb.Append(pixel ? black : white);
+                    }
+
+                    //padding derecho
+                    for (int p = 0; p < padding; p++)
+                        sb.Append(white);
+
+                    sb.Append(reset);
+                    sb.AppendLine();
+                }
+
+                //filas de padding abajo
+                for (int y = 0; y < padding; y++)
+                {
+                    for (int x = 0; x < size + 2 * padding; x++)
+                        sb.Append(white);
+                    sb.Append(reset);
+                    sb.AppendLine();
+                }
+
+                var qrText = sb.ToString();
+                context.Response.ContentType = "text/plain";
+                await context.Response.WriteAsync(qrText);
+            }
+        }
+
 
 
     }
